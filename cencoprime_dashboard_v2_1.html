@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CencoPrime · Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--g:#3CC13B;--dk:#1A1A1A;--gl:#EBF9EB;--gm:#C5ECC4;--gray:#F5F5F5;--bdr:#E0E0E0;--mt:#888;--tx:#1A1A1A}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#fff;color:var(--tx);font-size:13px}
+.hdr{background:#000;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--g)}
+.hdr-cenco{font-size:13px;font-weight:400;color:#fff;letter-spacing:.5px}
+.hdr-prime{font-size:26px;font-weight:900;color:#fff;letter-spacing:-0.5px;line-height:1;display:flex;align-items:flex-start}
+.hdr-dot{color:var(--g);font-size:32px;line-height:.7;font-weight:900}
+.hdr-badge{background:rgba(60,193,59,.15);color:var(--g);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid rgba(60,193,59,.3)}
+.kbar{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--bdr)}
+.kc{padding:10px 16px;border-right:1px solid var(--bdr)}.kc:last-child{border-right:none}
+.kl{font-size:10px;color:var(--mt);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.kv{font-size:19px;font-weight:700;color:var(--dk)}
+.ks{font-size:11px;margin-top:2px}.up{color:#27A026}.dn{color:#C0392B}.neu{color:var(--mt)}
+.main{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 110px)}
+.panel{padding:14px 16px;border-right:1px solid var(--bdr);background:#fff;overflow-y:auto}.panel:last-child{border-right:none}
+.ptitle{font-size:13px;font-weight:700;color:var(--dk);padding-bottom:8px;border-bottom:2px solid var(--g);margin-bottom:11px;display:flex;align-items:center;gap:6px}
+.picon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;background:var(--gl)}
+.flbl{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pill{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--bdr);color:var(--mt);cursor:pointer;background:#fff;transition:all .15s;user-select:none}
+.pill:hover{border-color:var(--g);color:var(--dk)}.pill.on{background:var(--dk);color:#fff;border-color:var(--dk)}
+.mkpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.mk{background:var(--gray);border-radius:7px;padding:8px 10px}
+.ml{font-size:10px;color:var(--mt);margin-bottom:2px}
+.mv{font-size:16px;font-weight:700;color:var(--dk)}
+.cbox{position:relative;width:100%;margin-bottom:10px}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:7px}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--mt)}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0;display:inline-block}
+.leg-line{width:18px;height:3px;border-radius:2px;flex-shrink:0;display:inline-block}
+.dtitle{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.pb{margin-bottom:5px;border:1px solid var(--bdr);border-radius:7px;overflow:hidden}
+.ph{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--gray);cursor:pointer}
+.ph:hover{background:#ebebeb}
+.phdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--g)}
+.phn{flex:1;font-weight:700;font-size:12px;color:var(--dk)}
+.phbw{width:60px;height:5px;background:var(--bdr);border-radius:3px;overflow:hidden}
+.phb{height:100%;border-radius:3px;background:var(--g)}
+.pht{font-weight:700;font-size:12px;color:var(--dk);min-width:44px;text-align:right}
+.php{font-size:11px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--gl);color:#27A026;min-width:32px;text-align:center}
+.phc{font-size:11px;color:var(--mt);transition:transform .2s;width:13px;text-align:center;display:inline-block}
+.phc.op{transform:rotate(180deg)}
+.prods{display:none;border-top:1px solid var(--bdr)}.prods.op{display:block}
+.prods-always{display:block;border-top:1px solid var(--bdr)}
+.pr{display:flex;flex-direction:column;gap:3px;padding:8px 10px 8px 22px;border-bottom:1px solid #f5f5f5}.pr:last-child{border-bottom:none}
+.pr-top{display:flex;align-items:center;gap:7px}
+.prn{flex:1;font-size:11px;color:var(--dk);font-weight:600}
+.pr-desc{font-size:10px;color:var(--mt);line-height:1.4}
+.prbw{width:46px;height:4px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.prb{height:100%;border-radius:2px;background:var(--gm)}
+.prv{font-size:11px;color:var(--mt);min-width:34px;text-align:right;font-weight:600}
+.sbtns{display:flex;gap:5px;margin-bottom:5px}
+.sbtn{font-size:10px;padding:3px 8px;border-radius:11px;border:1px solid var(--bdr);background:transparent;color:var(--mt);cursor:pointer}
+.sbtn:hover{background:var(--gray)}
+.empty{text-align:center;padding:24px;color:var(--mt);font-size:12px}
+.mpills{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+.mpill{font-size:10px;padding:3px 8px;border-radius:12px;border:1px solid var(--bdr);color:var(--mt);cursor:pointer;background:#fff}
+.mpill:hover{border-color:var(--g)}.mpill.on{background:var(--g);color:#fff;border-color:var(--g)}
+.ybtns{display:flex;gap:4px;margin-bottom:6px}
+.ybtn{font-size:10px;padding:3px 9px;border-radius:11px;border:1.5px solid var(--bdr);background:#fff;color:var(--mt);cursor:pointer;font-weight:600}
+.ybtn.on{background:var(--dk);color:#fff;border-color:var(--dk)}
+.ybtn:hover:not(.on){border-color:var(--g)}
+.ptabs{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap}
+.ptab{font-size:11px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--bdr);color:var(--mt);cursor:pointer;background:#fff;font-weight:500;transition:all .15s}
+.ptab.on{color:#fff;border-color:transparent}
+.ptab:hover:not(.on){border-color:var(--g)}
+.pmetrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.pmet{background:var(--gray);border-radius:6px;padding:7px 10px}
+.pmet-l{font-size:10px;color:var(--mt);margin-bottom:2px;line-height:1.3}
+.pmet-v{font-size:15px;font-weight:700;color:var(--dk)}
+.hint-box{background:#F0FFF0;border:1px solid #C5ECC4;border-radius:6px;padding:7px 10px;margin-bottom:10px;font-size:11px;color:#1A5C1A;line-height:1.6}
+.footer{text-align:center;padding:10px;font-size:10px;color:#aaa;border-top:1px solid var(--bdr)}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <div class="hdr-cenco">cenco</div>
+    <div class="hdr-prime">prime<span class="hdr-dot">·</span></div>
+  </div>
+  <div class="hdr-badge">Data real · Jul-26</div>
+</div>
+<div class="kbar" id="kpi-bar"></div>
+<div class="main">
+  <div class="panel">
+    <div class="ptitle"><div class="picon">⚡</div>Prime Weeks</div>
+    <div class="flbl">Selecciona ediciones</div>
+    <div class="sbtns"><button class="sbtn" onclick="selAllPW()">Todas</button><button class="sbtn" onclick="clrPW()">Ninguna</button></div>
+    <div class="pills" id="pw-pills"></div>
+    <div class="mkpis">
+      <div class="mk"><div class="ml">Usos seleccionados</div><div class="mv" id="pw-tot">–</div></div>
+      <div class="mk"><div class="ml">Partners</div><div class="mv" id="pw-pts">–</div></div>
+      <div class="mk"><div class="ml">Ediciones</div><div class="mv" id="pw-eds">0</div></div>
+    </div>
+    <div class="leg" id="pw-leg"></div>
+    <div class="cbox" style="height:210px"><canvas id="pw-chart" role="img" aria-label="Usos Prime Week"></canvas></div>
+    <div class="dtitle">Detalle por partner</div>
+    <div id="pw-det"></div>
+  </div>
+  <div class="panel">
+    <div class="ptitle"><div class="picon">📅</div>Beneficios estructurales</div>
+    <div class="flbl">Ver partner</div>
+    <div class="ptabs" id="est-tabs"></div>
+    <div class="hint-box" id="est-hint"></div>
+    <div class="flbl">Año</div>
+    <div class="ybtns" id="yr-btns"></div>
+    <div class="flbl">Mes</div>
+    <div class="sbtns"><button class="sbtn" onclick="selAllM()">Todos</button><button class="sbtn" onclick="clrM()">Ninguno</button></div>
+    <div class="mpills" id="m-pills"></div>
+    <div class="leg" id="est-leg"></div>
+    <div class="cbox" style="height:210px"><canvas id="est-chart"></canvas></div>
+    <div class="dtitle" id="est-det-title">Detalle último mes</div>
+    <div id="est-det"></div>
+  </div>
+</div>
+<div class="footer">CencoPrime · Dashboard Alianzas Loyalty · Jul-26</div>
+<script>
+const PW_DATA={
+  "1a 2025":{fecha:"Mayo 2025",partners:{
+    "EL COLORADO":[{prod:"EL COLORADO",desc:"Beneficio en El Colorado",usos:6}],
+    "COCHA":[{prod:"COCHA",desc:"Beneficio en Cocha",usos:1}],
+    "SPA MUND":[{prod:"SPA MUND",desc:"Beneficio en Spa Mund",usos:15}],
+    "ZOCO":[{prod:"ZOCO",desc:"Beneficio en Zoco",usos:50}],
+    "WOOSH":[{prod:"WOOSH",desc:"Beneficio en Woosh",usos:37}]
+  }},
+  "2a 2025":{fecha:"22–28 jul 2025",partners:{
+    "VOLKA":[{prod:"30% de descuento",desc:"30% en tienda física y web con cupón JUMBOPRIME",usos:408}],
+    "PALUMBO":[{prod:"25% dcto servicios",desc:"25% en uñas, pestañas, cejas, corte de pelo y servicios de barbería",usos:60}],
+    "CINÉPOLIS":[
+      {prod:"Pack 10 entradas 2D",desc:"$45.000 (antes $78.000) → 42% dcto",usos:15},
+      {prod:"Pack 4 VIP lun-jue",desc:"$30.000 (antes $61.200) → 51% dcto",usos:18},
+      {prod:"Combo pareja 2D",desc:"2 entradas + 2 bebidas + 1 box pop $19.000 → 42% dcto",usos:24}
+    ]
+  }},
+  "3a 2025":{fecha:"18–24 nov 2025",partners:{
+    "MELT":[{prod:"40% en MELT Pizzas",desc:"40% en Melting Hits vía meltpizzas.com o MELT App con cupón MELTPRIME08271",usos:210}],
+    "CINEPOLIS":[
+      {prod:"2 entradas 2D $9.000",desc:"Válido en salas 2D tradicionales",usos:31},
+      {prod:"2 entradas VIP $15.000",desc:"Solo en Cinépolis VIP Parque Arauco, Mall Plaza Egaña y Mall Plaza Domínicos",usos:31},
+      {prod:"Pack pareja",desc:"2 entradas 2D + 2 bebidas medianas + BOX POP",usos:31},
+      {prod:"2 Combos medianos $6.900",desc:"1 pop mediano + 1 bebida por combo",usos:31}
+    ],
+    "LATAM":[{prod:"25% dcto viajes internacionales",desc:"25% de descuento en vuelos internacionales LATAM",usos:524}],
+    "CENCO MALLS":[{prod:"Beneficio Cenco Malls",desc:"Beneficio especial en tiendas participantes",usos:2976}]
+  }},
+  "1a 2026":{fecha:"14–23 feb 2026",partners:{
+    "MARLEY COFFE":[
+      {prod:"Latte caliente $990",desc:"Café latte caliente a $990 mostrando código Prime en caja",usos:42},
+      {prod:"Latte frío $990",desc:"Café latte frío a $990 mostrando código Prime en caja",usos:53}
+    ],
+    "EMPORIO LA ROSA":[{prod:"30% en toda la carta",desc:"30% de descuento en toda la carta mostrando código Prime",usos:135}],
+    "BALI BODY":[
+      {prod:"30% en spray Bali",desc:"30% de descuento en spray bronceador Bali Body",usos:10},
+      {prod:"25% en productos Bali Body",desc:"25% de descuento en línea completa de productos Bali Body",usos:13}
+    ]
+  }},
+  "2a 2026":{fecha:"19–25 may 2026",partners:{
+    "CINEPOLIS":[
+      {prod:"Entradas 2D $4.600",desc:"Entradas 2D a precio exclusivo Prime. No acumulable",usos:139},
+      {prod:"Entradas VIP $7.900",desc:"Solo válidas en Cinépolis VIP Parque Arauco, Mall Plaza Egaña y Mall Plaza Domínicos",usos:140}
+    ],
+    "MIT BURGER":[{prod:"50% en toda la carta",desc:"50% de descuento en carta MIT Burger. Online: código único al pagar. Presencial: indicar código y mostrar perfil Prime con cédula",usos:615}],
+    "RINCON JUMBO":[
+      {prod:"Café gratis a la semana",desc:"1 café gratis por cliente por semana. Válido presencialmente entregando RUT en caja",usos:3779},
+      {prod:"Medialuna gratis a la semana",desc:"1 medialuna gratis por semana. Puede canjearse junto al café o por separado",usos:1411},
+      {prod:"Sandwich de miga $3.000",desc:"Válido apertura–12:00 y 17:00–cierre. Variedades: jamón huevo, jamón y queso, ave pimentón",usos:649}
+    ],
+    "KIDZANIA":[{prod:"40% en KidZania",desc:"40% de descuento en entrada a KidZania para clientes Prime activos",usos:77}]
+  }}
+,
+  "3a 2026":{fecha:"21–27 jul 2026",partners:{
+    "Despegar":[
+      {prod:"Hasta $100.000 dcto en paquetes",desc:"Cupón válido en paquetes turísticos en despegar.cl, app, tiendas o call center. Vigencia 21–27 jul 2026. Tope máximo del 10% del valor de la compra. No acumulable, un solo uso por cliente.",usos:24},
+      {prod:"Hasta $50.000 dcto en hoteles",desc:"Cupón válido en compra de hoteles en despegar.cl, app, tiendas o call center. Vigencia 21–27 jul 2026. Tope máximo del 20% del valor de la compra. No acumulable, un solo uso por cliente.",usos:32}
+    ],
+    "Juan Valdez":[
+      {prod:"Café Nevado mediano $990",desc:"Válido 21–27 jul 2026 para clientes Prime. 1 café Nevado mediano por $990, un solo uso por cliente. Presentar código en caja. No acumulable con otras promociones.",usos:808},
+      {prod:"Muffin a elección $500",desc:"Válido 21–27 jul 2026 para clientes Prime. 1 muffin a elección por $500, un solo uso por cliente. Presentar código en caja. No acumulable con otras promociones.",usos:839}
+    ],
+    "Margo":[
+      {prod:"50% dcto en carta (con TCS)",desc:"50% dcto con tope $50.000 por cuenta. Válido 23–27 jul en Margó de Cenco Costanera y Alto Las Condes. Requiere Tarjeta Cencosud Scotiabank y mostrar perfil Prime con cédula.",usos:512}
+    ],
+    "Santa Brasa":[
+      {prod:"50% dcto en carta (con TCS)",desc:"50% dcto con tope $50.000 por cuenta. Válido 23–27 jul en Santa Brasa de Cenco Costanera y Alto Las Condes. Requiere Tarjeta Cencosud Scotiabank y mostrar perfil Prime con cédula.",usos:314}
+    ],
+    "Happyland":[
+      {prod:"2 horas de juego $20.000",desc:"Válido 21–27 jul 2026 en todos los parques Happyland de Chile. Código personal e intransferible, presentar al momento de compra. 1 uso por cliente, no acumulable.",usos:80}
+    ],
+    "Turbus":[
+      {prod:"20% dcto en viajes (tope $10.000)",desc:"20% dcto con tope $10.000 por compra. Válido 21 jul–31 ago en www.turbus.cl. Solo línea Turbus, todos los destinos y horarios. Máximo 1 cupón por cliente al mes.",usos:93}
+    ]
+  }}
+};
+
+const EST_CFG={
+  "RINCON DEL JUMBO":{labelUsos:"Cafés canjeados",labelCli:"Clientes únicos",labelUpc:"Cafés por cliente",labelBase:"Suscriptores Prime activos",labelPen:"Penetración sobre Prime activos",hint:"<b>Cafés canjeados</b> en Rincón Jumbo · <b>Penetración</b> = clientes que canjearon / total Prime activos · <b>Cafés por cliente</b> = promedio mensual"},
+  "CABIFY":{labelUsos:"Viajes con descuento",labelCli:"Clientes únicos",labelUpc:"Viajes por cliente",labelBase:"Suscriptores Prime activos",labelPen:"Penetración sobre Prime activos",hint:"<b>Viajes con descuento</b> realizados con beneficio Prime · <b>Penetración</b> = clientes que viajaron / total Prime activos · <b>Viajes por cliente</b> = promedio mensual"},
+  "COPEC":{labelUsos:"Usos cupón $100/litro",labelCli:"Clientes únicos",labelUpc:"Usos cupón por cliente",labelBase:"Suscriptores Prime activos",labelPen:"Penetración sobre Prime activos",hint:"<b>Usos del cupón</b> de $100 de descuento por litro · <b>Penetración</b> = clientes que usaron el cupón / total Prime activos · <b>Usos por cliente</b> = promedio mensual"},
+  "CENCO MALLS":{labelUsos:"Bolsas parking usadas",labelCli:"Clientes únicos",labelUpc:"Bolsas por cliente",labelBase:"Prime con app Cenco Malls activa",labelPen:"Penetración sobre base con app activa",hint:"<b>Bolsas de 60 min parking</b> utilizadas · <b>Penetración</b> = clientes que usaron / Prime con app Cenco Malls activa · <b>Bolsas por cliente</b> = siempre ~1 (1 bolsa/mes)"}
+};
+
+const EST_DATA={
+  "RINCON DEL JUMBO":{color:"#6B3A2A",data:{
+    "Mar-25":{usos:17445,base:114161,pen:0.0922,cli:10530,upc:1.66,mom:null},
+    "Abr-25":{usos:17346,base:113501,pen:0.0921,cli:10452,upc:1.66,mom:-0.0057},
+    "May-25":{usos:18866,base:115050,pen:0.1000,cli:11508,upc:1.64,mom:0.0876},
+    "Jun-25":{usos:19117,base:116530,pen:0.0984,cli:11471,upc:1.67,mom:0.0133},
+    "Jul-25":{usos:20631,base:117802,pen:0.1019,cli:11999,upc:1.72,mom:0.0792},
+    "Ago-25":{usos:21920,base:120320,pen:0.1042,cli:12539,upc:1.75,mom:0.0625},
+    "Sep-25":{usos:20755,base:122708,pen:0.0994,cli:12196,upc:1.70,mom:-0.0531},
+    "Oct-25":{usos:23567,base:126929,pen:0.1051,cli:13340,upc:1.77,mom:0.1355},
+    "Nov-25":{usos:22536,base:132118,pen:0.1029,cli:13596,upc:1.66,mom:-0.0437},
+    "Dic-25":{usos:26032,base:137277,pen:0.1151,cli:15795,upc:1.65,mom:0.1551},
+    "Ene-26":{usos:25613,base:136942,pen:0.1124,cli:15397,upc:1.66,mom:-0.0161},
+    "Feb-26":{usos:24223,base:140838,pen:0.1077,cli:15165,upc:1.60,mom:-0.0543},
+    "Mar-26":{usos:34273,base:144720,pen:0.1348,cli:19502,upc:1.76,mom:0.4149},
+    "Abr-26":{usos:38437,base:148073,pen:0.1457,cli:21570,upc:1.78,mom:0.1215},
+    "May-26":{usos:41435,base:149000,pen:0.1651,cli:24605,upc:1.68,mom:0.0780},
+    "Jun-26":{usos:50216,base:160000,pen:0.1762,cli:28193,upc:1.78,mom:0.2119},
+    "Jul-26":{usos:55201,base:170853,pen:0.1781,cli:30429,upc:1.81,mom:0.0993}
+  }},
+  "CABIFY":{color:"#7B3FAF",data:{
+    "Mar-25":{usos:6186,base:114161,pen:0.0146,cli:1663,upc:3.72,mom:null},
+    "Abr-25":{usos:6174,base:113501,pen:0.0171,cli:1939,upc:3.18,mom:-0.0019},
+    "May-25":{usos:5623,base:115050,pen:0.0158,cli:1816,upc:3.10,mom:-0.0892},
+    "Jun-25":{usos:6143,base:116530,pen:0.0167,cli:1950,upc:3.15,mom:0.0925},
+    "Jul-25":{usos:6143,base:117802,pen:0.0200,cli:2357,upc:2.61,mom:0},
+    "Ago-25":{usos:7534,base:120320,pen:0.0204,cli:2455,upc:3.07,mom:0.2264},
+    "Sep-25":{usos:7299,base:122708,pen:0.0219,cli:2691,upc:2.71,mom:-0.0312},
+    "Oct-25":{usos:8547,base:126929,pen:0.0186,cli:2357,upc:3.63,mom:0.1710},
+    "Nov-25":{usos:9820,base:132118,pen:0.0244,cli:3225,upc:3.04,mom:0.1489},
+    "Dic-25":{usos:11285,base:137277,pen:0.0268,cli:3682,upc:3.06,mom:0.1492},
+    "Ene-26":{usos:12842,base:136942,pen:0.0219,cli:3005,upc:4.27,mom:0.1380},
+    "Feb-26":{usos:10414,base:140838,pen:0.0252,cli:3552,upc:2.93,mom:-0.1891},
+    "Mar-26":{usos:14194,base:144720,pen:0.0308,cli:4457,upc:3.18,mom:0.3630},
+    "Abr-26":{usos:15720,base:148073,pen:0.0336,cli:4980,upc:3.16,mom:0.1075},
+    "May-26":{usos:16253,base:149000,pen:0.0369,cli:5503,upc:2.95,mom:0.0339},
+    "Jun-26":{usos:16427,base:160000,pen:0.0334,cli:5351,upc:3.07,mom:0.0107},
+    "Jul-26":{usos:17653,base:170853,pen:0.0336,cli:5739,upc:3.08,mom:0.0746}
+  }},
+  "COPEC":{color:"#185FA5",data:{
+    "Nov-25":{usos:17446,base:132118,pen:0.0819,cli:10818,upc:1.61,mom:null},
+    "Dic-25":{usos:28386,base:137277,pen:0.1115,cli:15304,upc:1.85,mom:0.6271},
+    "Ene-26":{usos:26326,base:136942,pen:0.1101,cli:15073,upc:1.75,mom:-0.0726},
+    "Feb-26":{usos:26343,base:140838,pen:0.1065,cli:15003,upc:1.76,mom:0.0006},
+    "Mar-26":{usos:52321,base:144720,pen:0.1345,cli:19464,upc:2.69,mom:0.9861},
+    "Abr-26":{usos:56372,base:148073,pen:0.1897,cli:28090,upc:2.01,mom:0.0774},
+    "May-26":{usos:56152,base:149000,pen:0.1919,cli:28586,upc:1.96,mom:-0.0039},
+    "Jun-26":{usos:71760,base:160000,pen:0.2120,cli:33923,upc:2.12,mom:0.2780},
+    "Jul-26":{usos:54497,base:170853,pen:0.1756,cli:30000,upc:1.82,mom:-0.2405}
+  }},
+  "CENCO MALLS":{color:"#0097C4",data:{
+    "Nov-25":{usos:4918,base:25470,pen:0.1931,cli:4918,upc:1.0,mom:null},
+    "Dic-25":{usos:10178,base:30927,pen:0.3291,cli:10178,upc:1.0,mom:1.0695},
+    "Ene-26":{usos:10435,base:34448,pen:0.3029,cli:10435,upc:1.0,mom:0.0253},
+    "Feb-26":{usos:10261,base:36586,pen:0.2805,cli:10261,upc:1.0,mom:-0.0167},
+    "Mar-26":{usos:11502,base:35366,pen:0.3252,cli:11502,upc:1.0,mom:0.1209},
+    "Abr-26":{usos:11112,base:37653,pen:0.2951,cli:11112,upc:1.0,mom:-0.0339},
+    "May-26":{usos:12379,base:42119,pen:0.2939,cli:12379,upc:1.0,mom:0.1140},
+    "Jun-26":{usos:10967,base:43303,pen:0.2533,cli:10967,upc:1.0,mom:-0.1141},
+    "Jul-26":{usos:13721,base:46423,pen:0.2872,cli:13331,upc:1.03,mom:0.2511}
+  }}
+};
+
+const PW_ORDER=["1a 2025","2a 2025","3a 2025","1a 2026","2a 2026","3a 2026"];
+const EST_PARTNERS=["RINCON DEL JUMBO","CABIFY","COPEC","CENCO MALLS"];
+const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25","Oct-25","Nov-25","Dic-25","Ene-26","Feb-26","Mar-26","Abr-26","May-26","Jun-26","Jul-26"];
+const PW_PALETTE=["#C5ECC4","#8DD98C","#3CC13B","#27A026","#1A7A19"];
+const PARTNER_COLORS=["#3CC13B","#27A026","#1A7A19","#0F5210","#8DD98C","#C5ECC4","#6B3A2A","#0097C4","#7B3FAF","#185FA5"];
+const YEARS=["2025","2026"];
+
+let selPWs=new Set(["2a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
+const fmt=n=>Math.round(n).toLocaleString("es-CL");
+const ptotal=pw=>Object.values(PW_DATA[pw].partners).flatMap(p=>p).reduce((s,x)=>s+x.usos,0);
+const ppartner=(pw,p)=>PW_DATA[pw].partners[p]?PW_DATA[pw].partners[p].reduce((s,x)=>s+x.usos,0):0;
+
+function buildKPIs(){
+  document.getElementById("kpi-bar").innerHTML=EST_PARTNERS.map(p=>{
+    const d=EST_DATA[p].data["Jul-26"];if(!d)return"";
+    const mom=d.mom,mcls=mom==null?"neu":mom>=0?"up":"dn";
+    const msign=mom==null?"–":((mom>=0?"+":"")+(mom*100).toFixed(1)+"%");
+    return`<div class="kc" style="border-left:3px solid ${EST_DATA[p].color}">
+      <div class="kl">${p} · Jul-26</div>
+      <div class="kv">${fmt(d.usos)}</div>
+      <div class="ks ${mcls}">${msign} vs Jun-26</div>
+    </div>`;
+  }).join("");
+}
+
+function getM(){return MONTH_ORDER.filter(m=>selMonths.has(m)&&selYears.has("20"+m.slice(-2)))}
+function bPW(){const c=document.getElementById("pw-pills");c.innerHTML="";PW_ORDER.forEach(pw=>{const b=document.createElement("button");b.className="pill"+(selPWs.has(pw)?" on":"");b.innerHTML=`<b>${pw}</b> · ${PW_DATA[pw].fecha}`;b.onclick=()=>{selPWs.has(pw)?selPWs.delete(pw):selPWs.add(pw);bPW();rPW()};c.appendChild(b)})}
+function bEstTabs(){const c=document.getElementById("est-tabs");c.innerHTML="";EST_PARTNERS.forEach(p=>{const b=document.createElement("button");b.className="ptab"+(selPartner===p?" on":"");if(selPartner===p){b.style.background=EST_DATA[p].color;b.style.borderColor=EST_DATA[p].color}b.textContent=p;b.onclick=()=>{selPartner=p;bEstTabs();rEst()};c.appendChild(b)})}
+function bYears(){const c=document.getElementById("yr-btns");c.innerHTML="";YEARS.forEach(y=>{const b=document.createElement("button");b.className="ybtn"+(selYears.has(y)?" on":"");b.textContent=y;b.onclick=()=>{selYears.has(y)?selYears.delete(y):selYears.add(y);bYears();bMonths();rEst()};c.appendChild(b)})}
+function bMonths(){const c=document.getElementById("m-pills");c.innerHTML="";MONTH_ORDER.filter(m=>selYears.has("20"+m.slice(-2))).forEach(m=>{const b=document.createElement("button");b.className="mpill"+(selMonths.has(m)?" on":"");b.textContent=m;b.onclick=()=>{selMonths.has(m)?selMonths.delete(m):selMonths.add(m);bMonths();rEst()};c.appendChild(b)})}
+function selAllPW(){PW_ORDER.forEach(pw=>selPWs.add(pw));bPW();rPW()}
+function clrPW(){selPWs.clear();bPW();rPW()}
+function selAllM(){MONTH_ORDER.forEach(m=>selMonths.add(m));bMonths();rEst()}
+function clrM(){selMonths.clear();bMonths();rEst()}
+function tog(id){document.getElementById("prods-"+id)?.classList.toggle("op");document.getElementById("chev-"+id)?.classList.toggle("op")}
+
+function buildProdRows(items){
+  const mp=Math.max(...items.map(x=>x.usos),1);
+  return items.map(x=>`<div class="pr"><div class="pr-top"><span class="prn">${x.prod}</span><div class="prbw"><div class="prb" style="width:${Math.round(x.usos/mp*100)}%"></div></div><span class="prv">${fmt(x.usos)}</span></div><div class="pr-desc">${x.desc}</div></div>`).join("");
+}
+
+function rPW(){
+  const act=PW_ORDER.filter(pw=>selPWs.has(pw));
+  if(!act.length){["pw-tot","pw-pts","pw-eds"].forEach(id=>document.getElementById(id).textContent="–");document.getElementById("pw-eds").textContent="0";document.getElementById("pw-leg").innerHTML="";document.getElementById("pw-det").innerHTML='<div class="empty">Selecciona al menos una Prime Week</div>';if(pwC){pwC.destroy();pwC=null}return}
+  const grand=act.reduce((s,pw)=>s+ptotal(pw),0);
+  const allP=[...new Set(act.flatMap(pw=>Object.keys(PW_DATA[pw].partners)))];
+  document.getElementById("pw-tot").textContent=fmt(grand);document.getElementById("pw-pts").textContent=allP.length;document.getElementById("pw-eds").textContent=act.length;
+  const ctx=document.getElementById("pw-chart").getContext("2d");if(pwC){pwC.destroy();pwC=null}
+  if(act.length===1){
+    const pw=act[0];
+    const pT=Object.entries(PW_DATA[pw].partners).map(([p,items])=>[p,items.reduce((s,x)=>s+x.usos,0)]).sort((a,b)=>b[1]-a[1]);
+    document.getElementById("pw-leg").innerHTML="";
+    pwC=new Chart(ctx,{type:"bar",data:{labels:pT.map(([p])=>p),datasets:[{data:pT.map(([,u])=>u),backgroundColor:pT.map((_,i)=>PW_PALETTE[Math.min(i,PW_PALETTE.length-1)]),borderRadius:4,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:v=>"Usos: "+fmt(v.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{size:10},color:"#888",maxRotation:35,autoSkip:false}},y:{grid:{color:"#f5f5f5"},ticks:{font:{size:10},color:"#888",callback:v=>fmt(v)}}}}});
+    const mxP=pT[0]?.[1]||1;
+    document.getElementById("pw-det").innerHTML=pT.map(([p,total],i)=>{
+      const items=[...PW_DATA[pw].partners[p]].sort((a,b)=>b.usos-a.usos);
+      const bw=Math.round(total/mxP*100),pct=Math.round(total/grand*100),hm=items.length>1;
+      const prodHTML=buildProdRows(items);
+      return`<div class="pb"><div class="ph" onclick="tog('pw${i}')"><div class="phdot"></div><span class="phn">${p}</span><div class="phbw"><div class="phb" style="width:${bw}%"></div></div><span class="pht">${fmt(total)}</span><span class="php">${pct}%</span><span class="phc op" id="chev-pw${i}">&#9660;</span></div><div class="prods op" id="prods-pw${i}">${prodHTML}</div></div>`;
+    }).join("");
+  } else {
+    const pcMap={};allP.forEach((p,i)=>{pcMap[p]=PARTNER_COLORS[i%PARTNER_COLORS.length]});
+    document.getElementById("pw-leg").innerHTML=allP.map(p=>`<span class="leg-i"><span class="leg-sq" style="background:${pcMap[p]}"></span>${p}</span>`).join("");
+    const ds=allP.map(p=>({label:p,data:act.map(pw=>ppartner(pw,p)),backgroundColor:pcMap[p],borderRadius:0,borderSkipped:false}));
+    if(ds.length>0)ds[ds.length-1].borderRadius=4;
+    pwC=new Chart(ctx,{type:"bar",data:{labels:act.map(pw=>pw+" · "+PW_DATA[pw].fecha),datasets:ds},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,callbacks:{label:v=>v.raw>0?`${v.dataset.label}: ${fmt(v.raw)}`:'',footer:items=>"Total: "+fmt(items.reduce((s,i)=>s+(i.raw||0),0))}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:"#888",maxRotation:25,autoSkip:false}},y:{stacked:true,grid:{color:"#f5f5f5"},ticks:{font:{size:10},color:"#888",callback:v=>fmt(v)}}}}});
+    const mxPW=Math.max(...act.map(pw=>ptotal(pw)));
+    document.getElementById("pw-det").innerHTML=act.map((pw,i)=>{
+      const total=ptotal(pw),pct=Math.round(total/grand*100),bw=Math.round(total/mxPW*100);
+      const sub=Object.entries(PW_DATA[pw].partners).map(([p,items])=>{const u=items.reduce((s,x)=>s+x.usos,0);return`<div style="border-bottom:1px solid #f0f0f0"><div style="display:flex;align-items:center;gap:8px;padding:6px 10px 4px 22px"><span class="leg-sq" style="background:${pcMap[p]||'#3CC13B'};flex-shrink:0"></span><span style="flex:1;font-size:12px;font-weight:700;color:var(--dk)">${p}</span><span style="font-size:11px;font-weight:600;color:var(--mt)">${fmt(u)}</span></div>${buildProdRows(items)}</div>`;}).join("");
+      return`<div class="pb"><div class="ph" onclick="tog('pw${i}')"><div class="phdot" style="background:${PW_PALETTE[i%PW_PALETTE.length]}"></div><span class="phn">${pw} · ${PW_DATA[pw].fecha}</span><div class="phbw"><div class="phb" style="width:${bw}%;background:${PW_PALETTE[i%PW_PALETTE.length]}"></div></div><span class="pht">${fmt(total)}</span><span class="php">${pct}%</span><span class="phc" id="chev-pw${i}">▾</span></div><div class="prods" id="prods-pw${i}">${sub}</div></div>`;
+    }).join("");
+  }
+}
+
+function rEst(){
+  const p=selPartner,color=EST_DATA[p].color,cfg=EST_CFG[p];
+  document.getElementById("est-hint").innerHTML=cfg.hint;
+  const months=getM().filter(m=>EST_DATA[p].data[m]);
+  document.getElementById("est-leg").innerHTML=`<span class="leg-i"><span class="leg-sq" style="background:${color}"></span>${cfg.labelUsos}</span><span class="leg-i"><span class="leg-sq" style="background:${color};opacity:.35"></span>${cfg.labelCli}</span><span class="leg-i"><span class="leg-line" style="background:#E8580D"></span>${cfg.labelUpc}</span>`;
+  const ctx=document.getElementById("est-chart").getContext("2d");if(eC)eC.destroy();
+  if(!months.length){document.getElementById("est-det").innerHTML='<div class="empty">Sin datos en el período seleccionado</div>';return}
+  eC=new Chart(ctx,{data:{labels:months,datasets:[
+    {type:"bar",label:cfg.labelUsos,data:months.map(m=>EST_DATA[p].data[m]?.usos||null),backgroundColor:color+"CC",borderRadius:3,borderSkipped:false,yAxisID:"y",order:2},
+    {type:"bar",label:cfg.labelCli,data:months.map(m=>EST_DATA[p].data[m]?.cli||null),backgroundColor:color+"33",borderRadius:3,borderSkipped:false,yAxisID:"y",order:3},
+    {type:"line",label:cfg.labelUpc,data:months.map(m=>EST_DATA[p].data[m]?.upc||null),borderColor:"#E8580D",backgroundColor:"transparent",tension:.35,pointRadius:3,pointHoverRadius:5,borderWidth:2.5,yAxisID:"y2",spanGaps:true,order:1}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,callbacks:{label:v=>`${v.dataset.label}: ${v.dataset.yAxisID==="y2"?v.raw.toFixed(2):fmt(v.raw)}`}}},scales:{x:{grid:{display:false},ticks:{font:{size:9},color:"#888",autoSkip:true,maxTicksLimit:12,maxRotation:35}},y:{position:"left",grid:{color:"#f5f5f5"},ticks:{font:{size:9},color:"#888",callback:v=>v>=1000?(v/1000).toFixed(0)+"k":v}},y2:{position:"right",grid:{display:false},ticks:{font:{size:9},color:"#E8580D",callback:v=>v.toFixed(1)},title:{display:true,text:cfg.labelUpc,font:{size:9},color:"#E8580D"}}}}});
+  const lM=months[months.length-1],d=EST_DATA[p].data[lM];
+  document.getElementById("est-det-title").textContent=`Detalle ${lM} · ${p}`;
+  document.getElementById("est-det").innerHTML=`<div class="pmetrics">
+    <div class="pmet"><div class="pmet-l">${cfg.labelUsos}</div><div class="pmet-v" style="color:${color}">${fmt(d.usos)}</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelBase}</div><div class="pmet-v">${fmt(d.base)}</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelPen}</div><div class="pmet-v">${(d.pen*100).toFixed(1)}%</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelCli}</div><div class="pmet-v">${fmt(d.cli)}</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelUpc}</div><div class="pmet-v">${d.upc.toFixed(2)}</div></div>
+    <div class="pmet"><div class="pmet-l">MoM</div><div class="pmet-v" style="color:${d.mom!=null?(d.mom>=0?'#27A026':'#C0392B'):'#888'}">${d.mom!=null?((d.mom>=0?'+':'')+(d.mom*100).toFixed(1)+'%'):'–'}</div></div>
+  </div>`;
+}
+
+buildKPIs();bPW();bEstTabs();bYears();bMonths();rPW();rEst();
+</script>
+</body>
+</html>
