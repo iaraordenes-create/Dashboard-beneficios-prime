@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>CencoPrime · Dashboard</title>
+<title>Jumbo Prime · Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -78,12 +78,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 .pmet-v{font-size:15px;font-weight:700;color:var(--dk)}
 .hint-box{background:#F0FFF0;border:1px solid #C5ECC4;border-radius:6px;padding:7px 10px;margin-bottom:10px;font-size:11px;color:#1A5C1A;line-height:1.6}
 .footer{text-align:center;padding:10px;font-size:10px;color:#aaa;border-top:1px solid var(--bdr)}
+.pom-table{border:1px solid var(--bdr);border-radius:7px;overflow:hidden;margin-top:8px}
+.pom-row{display:flex}
+.pom-row+.pom-row{border-top:1px solid var(--bdr)}
+.pom-row.head{background:var(--gray)}
+.pom-row.head .pom-cell{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.05em}
+.pom-cell{flex:1;padding:8px 10px;font-size:12px;color:var(--dk)}
+.pom-cell:first-child{flex:0 0 90px;font-weight:600;border-right:1px solid var(--bdr)}
+.pom-cell.pom-num{flex:0 0 90px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.pom-cell.pom-empty{color:var(--mt);font-style:italic;font-weight:400}
 </style>
 </head>
 <body>
 <div class="hdr">
   <div>
-    <div class="hdr-cenco">cenco</div>
+    <div class="hdr-cenco">jumbo</div>
     <div class="hdr-prime">prime<span class="hdr-dot">·</span></div>
   </div>
   <div class="hdr-badge">Data real · Ago-26</div>
@@ -119,9 +128,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <div class="cbox" style="height:210px"><canvas id="est-chart"></canvas></div>
     <div class="dtitle" id="est-det-title">Detalle último mes</div>
     <div id="est-det"></div>
+    <div class="dtitle" style="margin-top:14px">Partner del Mes</div>
+    <div id="partner-mes"></div>
   </div>
 </div>
-<div class="footer">CencoPrime · Dashboard Alianzas Loyalty · Ago-26</div>
+<div class="footer">Jumbo Prime · Dashboard Alianzas Loyalty · Ago-26</div>
 <script>
 const PW_DATA={
   "1a 2025":{fecha:"Mayo 2025",partners:{
@@ -246,7 +257,7 @@ const EST_DATA={
     "May-26":{usos:16253,base:149000,pen:0.0369,cli:5503,upc:2.95,mom:0.0339},
     "Jun-26":{usos:16427,base:160000,pen:0.0334,cli:5351,upc:3.07,mom:0.0107},
     "Jul-26":{usos:17653,base:170853,pen:0.0336,cli:5739,upc:3.08,mom:0.0746},
-    "Ago-26":{usos:null,base:176040,pen:null,cli:null,upc:null,mom:null,incompleto:true}
+    "Ago-26":{usos:18215,base:176040,pen:0.0340,cli:5988,upc:3.04,mom:0.0318}
   }},
   "COPEC":{color:"#185FA5",data:{
     "Nov-25":{usos:17446,base:132118,pen:0.0819,cli:10818,upc:1.61,mom:null},
@@ -280,6 +291,13 @@ const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25
 const PW_PALETTE=["#C5ECC4","#8DD98C","#3CC13B","#27A026","#1A7A19"];
 const PARTNER_COLORS=["#3CC13B","#27A026","#1A7A19","#0F5210","#8DD98C","#C5ECC4","#6B3A2A","#0097C4","#7B3FAF","#185FA5"];
 const YEARS=["2025","2026"];
+
+/* Partner del Mes — estructura independiente, fácil de extender mes a mes.
+   Para agregar un nuevo mes:
+   PARTNER_MES["Sep-26"]={partner:"Nombre Partner",producto:"Descripción corta del beneficio",usos:0,clientes:0}; */
+const PARTNER_MES={
+  "Ago-26":{partner:"KidZania",producto:"30% dcto entradas niño y adulto",usos:180,clientes:57}
+};
 
 let selPWs=new Set(["3a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
 const fmt=n=>(n===null||n===undefined||isNaN(n))?"–":Math.round(n).toLocaleString("es-CL");
@@ -356,9 +374,26 @@ function rPW(){
   }
 }
 
+function renderPartnerMes(){
+  const months=getM();
+  const withData=months.filter(m=>PARTNER_MES[m]);
+  const rows=withData.length?withData:(months.length?[months[months.length-1]]:[]);
+  const el=document.getElementById("partner-mes");
+  if(!rows.length){el.innerHTML='<div class="pom-table"><div class="pom-row"><div class="pom-cell pom-empty">Sin meses seleccionados</div></div></div>';return}
+  el.innerHTML=`<div class="pom-table">
+    <div class="pom-row head"><div class="pom-cell">Mes</div><div class="pom-cell">Partner del Mes</div><div class="pom-cell pom-num">Usos</div><div class="pom-cell pom-num">Clientes</div></div>
+    ${rows.map(m=>{
+      const d=PARTNER_MES[m];
+      if(!d)return `<div class="pom-row"><div class="pom-cell">${m}</div><div class="pom-cell pom-empty">Sin información</div><div class="pom-cell pom-num pom-empty">–</div><div class="pom-cell pom-num pom-empty">–</div></div>`;
+      return `<div class="pom-row"><div class="pom-cell">${m}<div style="font-size:10px;font-weight:400;color:var(--mt)">${d.producto||""}</div></div><div class="pom-cell">${d.partner}</div><div class="pom-cell pom-num">${fmt(d.usos)}</div><div class="pom-cell pom-num">${fmt(d.clientes)}</div></div>`;
+    }).join("")}
+  </div>`;
+}
+
 function rEst(){
   const p=selPartner,color=EST_DATA[p].color,cfg=EST_CFG[p];
   document.getElementById("est-hint").innerHTML=cfg.hint;
+  renderPartnerMes();
   const months=getM().filter(m=>EST_DATA[p].data[m]);
   document.getElementById("est-leg").innerHTML=`<span class="leg-i"><span class="leg-sq" style="background:${color}"></span>${cfg.labelUsos}</span><span class="leg-i"><span class="leg-sq" style="background:${color};opacity:.35"></span>${cfg.labelCli}</span><span class="leg-i"><span class="leg-line" style="background:#E8580D"></span>${cfg.labelUpc}</span>`;
   const ctx=document.getElementById("est-chart").getContext("2d");if(eC)eC.destroy();
