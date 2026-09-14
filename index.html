@@ -86,7 +86,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <div class="hdr-cenco">cenco</div>
     <div class="hdr-prime">prime<span class="hdr-dot">·</span></div>
   </div>
-  <div class="hdr-badge">Data real · Jul-26</div>
+  <div class="hdr-badge">Data real · Ago-26</div>
 </div>
 <div class="kbar" id="kpi-bar"></div>
 <div class="main">
@@ -121,7 +121,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <div id="est-det"></div>
   </div>
 </div>
-<div class="footer">CencoPrime · Dashboard Alianzas Loyalty · Jul-26</div>
+<div class="footer">CencoPrime · Dashboard Alianzas Loyalty · Ago-26</div>
 <script>
 const PW_DATA={
   "1a 2025":{fecha:"Mayo 2025",partners:{
@@ -225,7 +225,8 @@ const EST_DATA={
     "Abr-26":{usos:38437,base:148073,pen:0.1457,cli:21570,upc:1.78,mom:0.1215},
     "May-26":{usos:41435,base:149000,pen:0.1651,cli:24605,upc:1.68,mom:0.0780},
     "Jun-26":{usos:50216,base:160000,pen:0.1762,cli:28193,upc:1.78,mom:0.2119},
-    "Jul-26":{usos:55201,base:170853,pen:0.1781,cli:30429,upc:1.81,mom:0.0993}
+    "Jul-26":{usos:55201,base:170853,pen:0.1781,cli:30429,upc:1.81,mom:0.0993},
+    "Ago-26":{usos:65328,base:176040,pen:0.1949,cli:34317,upc:1.90,mom:0.1835}
   }},
   "CABIFY":{color:"#7B3FAF",data:{
     "Mar-25":{usos:6186,base:114161,pen:0.0146,cli:1663,upc:3.72,mom:null},
@@ -244,7 +245,8 @@ const EST_DATA={
     "Abr-26":{usos:15720,base:148073,pen:0.0336,cli:4980,upc:3.16,mom:0.1075},
     "May-26":{usos:16253,base:149000,pen:0.0369,cli:5503,upc:2.95,mom:0.0339},
     "Jun-26":{usos:16427,base:160000,pen:0.0334,cli:5351,upc:3.07,mom:0.0107},
-    "Jul-26":{usos:17653,base:170853,pen:0.0336,cli:5739,upc:3.08,mom:0.0746}
+    "Jul-26":{usos:17653,base:170853,pen:0.0336,cli:5739,upc:3.08,mom:0.0746},
+    "Ago-26":{usos:null,base:176040,pen:null,cli:null,upc:null,mom:null,incompleto:true}
   }},
   "COPEC":{color:"#185FA5",data:{
     "Nov-25":{usos:17446,base:132118,pen:0.0819,cli:10818,upc:1.61,mom:null},
@@ -255,7 +257,8 @@ const EST_DATA={
     "Abr-26":{usos:56372,base:148073,pen:0.1897,cli:28090,upc:2.01,mom:0.0774},
     "May-26":{usos:56152,base:149000,pen:0.1919,cli:28586,upc:1.96,mom:-0.0039},
     "Jun-26":{usos:71760,base:160000,pen:0.2120,cli:33923,upc:2.12,mom:0.2780},
-    "Jul-26":{usos:54497,base:170853,pen:0.1756,cli:30000,upc:1.82,mom:-0.2405}
+    "Jul-26":{usos:54497,base:170853,pen:0.1756,cli:30000,upc:1.82,mom:-0.2405},
+    "Ago-26":{usos:56055,base:176040,pen:0.1761,cli:31003,upc:1.81,mom:0.0286}
   }},
   "CENCO MALLS":{color:"#0097C4",data:{
     "Nov-25":{usos:4918,base:25470,pen:0.1931,cli:4918,upc:1.0,mom:null},
@@ -266,31 +269,39 @@ const EST_DATA={
     "Abr-26":{usos:11112,base:37653,pen:0.2951,cli:11112,upc:1.0,mom:-0.0339},
     "May-26":{usos:12379,base:42119,pen:0.2939,cli:12379,upc:1.0,mom:0.1140},
     "Jun-26":{usos:10967,base:43303,pen:0.2533,cli:10967,upc:1.0,mom:-0.1141},
-    "Jul-26":{usos:13721,base:46423,pen:0.2872,cli:13331,upc:1.03,mom:0.2511}
+    "Jul-26":{usos:13721,base:46423,pen:0.2872,cli:13331,upc:1.03,mom:0.2511},
+    "Ago-26":{usos:14492,base:47547,pen:0.2988,cli:14205,upc:1.02,mom:0.0562}
   }}
 };
 
 const PW_ORDER=["1a 2025","2a 2025","3a 2025","1a 2026","2a 2026","3a 2026"];
 const EST_PARTNERS=["RINCON DEL JUMBO","CABIFY","COPEC","CENCO MALLS"];
-const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25","Oct-25","Nov-25","Dic-25","Ene-26","Feb-26","Mar-26","Abr-26","May-26","Jun-26","Jul-26"];
+const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25","Oct-25","Nov-25","Dic-25","Ene-26","Feb-26","Mar-26","Abr-26","May-26","Jun-26","Jul-26","Ago-26"];
 const PW_PALETTE=["#C5ECC4","#8DD98C","#3CC13B","#27A026","#1A7A19"];
 const PARTNER_COLORS=["#3CC13B","#27A026","#1A7A19","#0F5210","#8DD98C","#C5ECC4","#6B3A2A","#0097C4","#7B3FAF","#185FA5"];
 const YEARS=["2025","2026"];
 
-let selPWs=new Set(["2a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
-const fmt=n=>Math.round(n).toLocaleString("es-CL");
+let selPWs=new Set(["3a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
+const fmt=n=>(n===null||n===undefined||isNaN(n))?"–":Math.round(n).toLocaleString("es-CL");
 const ptotal=pw=>Object.values(PW_DATA[pw].partners).flatMap(p=>p).reduce((s,x)=>s+x.usos,0);
 const ppartner=(pw,p)=>PW_DATA[pw].partners[p]?PW_DATA[pw].partners[p].reduce((s,x)=>s+x.usos,0):0;
 
+function lastMonthWithUsos(p){
+  const ms=MONTH_ORDER.filter(m=>EST_DATA[p].data[m]&&EST_DATA[p].data[m].usos!=null);
+  return ms[ms.length-1];
+}
 function buildKPIs(){
   document.getElementById("kpi-bar").innerHTML=EST_PARTNERS.map(p=>{
-    const d=EST_DATA[p].data["Jul-26"];if(!d)return"";
+    const lM=lastMonthWithUsos(p);if(!lM)return"";
+    const d=EST_DATA[p].data[lM];
+    const idx=MONTH_ORDER.indexOf(lM),prevM=MONTH_ORDER[idx-1];
     const mom=d.mom,mcls=mom==null?"neu":mom>=0?"up":"dn";
     const msign=mom==null?"–":((mom>=0?"+":"")+(mom*100).toFixed(1)+"%");
+    const pend=EST_DATA[p].data["Ago-26"]&&EST_DATA[p].data["Ago-26"].incompleto?' <span style="font-weight:400">(cierre pendiente)</span>':'';
     return`<div class="kc" style="border-left:3px solid ${EST_DATA[p].color}">
-      <div class="kl">${p} · Jul-26</div>
+      <div class="kl">${p} · ${lM}${pend}</div>
       <div class="kv">${fmt(d.usos)}</div>
-      <div class="ks ${mcls}">${msign} vs Jun-26</div>
+      <div class="ks ${mcls}">${msign}${prevM?' vs '+prevM:''}</div>
     </div>`;
   }).join("");
 }
@@ -362,11 +373,11 @@ function rEst(){
   document.getElementById("est-det").innerHTML=`<div class="pmetrics">
     <div class="pmet"><div class="pmet-l">${cfg.labelUsos}</div><div class="pmet-v" style="color:${color}">${fmt(d.usos)}</div></div>
     <div class="pmet"><div class="pmet-l">${cfg.labelBase}</div><div class="pmet-v">${fmt(d.base)}</div></div>
-    <div class="pmet"><div class="pmet-l">${cfg.labelPen}</div><div class="pmet-v">${(d.pen*100).toFixed(1)}%</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelPen}</div><div class="pmet-v">${d.pen!=null?(d.pen*100).toFixed(1)+'%':'–'}</div></div>
     <div class="pmet"><div class="pmet-l">${cfg.labelCli}</div><div class="pmet-v">${fmt(d.cli)}</div></div>
-    <div class="pmet"><div class="pmet-l">${cfg.labelUpc}</div><div class="pmet-v">${d.upc.toFixed(2)}</div></div>
+    <div class="pmet"><div class="pmet-l">${cfg.labelUpc}</div><div class="pmet-v">${d.upc!=null?d.upc.toFixed(2):'–'}</div></div>
     <div class="pmet"><div class="pmet-l">MoM</div><div class="pmet-v" style="color:${d.mom!=null?(d.mom>=0?'#27A026':'#C0392B'):'#888'}">${d.mom!=null?((d.mom>=0?'+':'')+(d.mom*100).toFixed(1)+'%'):'–'}</div></div>
-  </div>`;
+  </div>${d.incompleto?'<div class="hint-box" style="margin-top:8px">Mes en proceso de cierre — aún sin usos/penetración cargados. Base de clientes ya disponible.</div>':''}`;
 }
 
 buildKPIs();bPW();bEstTabs();bYears();bMonths();rPW();rEst();
