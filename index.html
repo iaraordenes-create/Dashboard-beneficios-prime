@@ -78,15 +78,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
 .pmet-v{font-size:15px;font-weight:700;color:var(--dk)}
 .hint-box{background:#F0FFF0;border:1px solid #C5ECC4;border-radius:6px;padding:7px 10px;margin-bottom:10px;font-size:11px;color:#1A5C1A;line-height:1.6}
 .footer{text-align:center;padding:10px;font-size:10px;color:#aaa;border-top:1px solid var(--bdr)}
-.pom-table{border:1px solid var(--bdr);border-radius:7px;overflow:hidden;margin-top:8px}
-.pom-row{display:flex}
-.pom-row+.pom-row{border-top:1px solid var(--bdr)}
-.pom-row.head{background:var(--gray)}
-.pom-row.head .pom-cell{font-size:10px;font-weight:700;color:var(--mt);text-transform:uppercase;letter-spacing:.05em}
-.pom-cell{flex:1;padding:8px 10px;font-size:12px;color:var(--dk)}
-.pom-cell:first-child{flex:0 0 90px;font-weight:600;border-right:1px solid var(--bdr)}
-.pom-cell.pom-num{flex:0 0 90px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
-.pom-cell.pom-empty{color:var(--mt);font-style:italic;font-weight:400}
+.pom-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:2px}
+.pom-full{grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -95,7 +88,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <div class="hdr-cenco">jumbo</div>
     <div class="hdr-prime">prime<span class="hdr-dot">·</span></div>
   </div>
-  <div class="hdr-badge">Data real · Ago-26</div>
+  <div class="hdr-badge">Data real · Sep-26</div>
 </div>
 <div class="kbar" id="kpi-bar"></div>
 <div class="main">
@@ -129,10 +122,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;ba
     <div class="dtitle" id="est-det-title">Detalle último mes</div>
     <div id="est-det"></div>
     <div class="dtitle" style="margin-top:14px">Partner del Mes</div>
+    <div class="flbl">Selecciona un mes</div>
+    <div class="mpills" id="pom-pills"></div>
     <div id="partner-mes"></div>
   </div>
 </div>
-<div class="footer">Jumbo Prime · Dashboard Alianzas Loyalty · Ago-26</div>
+<div class="footer">Jumbo Prime · Dashboard Alianzas Loyalty · Sep-26</div>
 <script>
 const PW_DATA={
   "1a 2025":{fecha:"Mayo 2025",partners:{
@@ -237,7 +232,8 @@ const EST_DATA={
     "May-26":{usos:41435,base:149000,pen:0.1651,cli:24605,upc:1.68,mom:0.0780},
     "Jun-26":{usos:50216,base:160000,pen:0.1762,cli:28193,upc:1.78,mom:0.2119},
     "Jul-26":{usos:55201,base:170853,pen:0.1781,cli:30429,upc:1.81,mom:0.0993},
-    "Ago-26":{usos:65328,base:176040,pen:0.1949,cli:34317,upc:1.90,mom:0.1835}
+    "Ago-26":{usos:65328,base:176040,pen:0.1949,cli:34317,upc:1.90,mom:0.1835},
+    "Sep-26":{usos:59679,base:176328,pen:0.1869,cli:32961,upc:1.81,mom:-0.0865}
   }},
   "CABIFY":{color:"#7B3FAF",data:{
     "Mar-25":{usos:6186,base:114161,pen:0.0146,cli:1663,upc:3.72,mom:null},
@@ -257,7 +253,8 @@ const EST_DATA={
     "May-26":{usos:16253,base:149000,pen:0.0369,cli:5503,upc:2.95,mom:0.0339},
     "Jun-26":{usos:16427,base:160000,pen:0.0334,cli:5351,upc:3.07,mom:0.0107},
     "Jul-26":{usos:17653,base:170853,pen:0.0336,cli:5739,upc:3.08,mom:0.0746},
-    "Ago-26":{usos:18215,base:176040,pen:0.0340,cli:5988,upc:3.04,mom:0.0318}
+    "Ago-26":{usos:18215,base:176040,pen:0.0340,cli:5988,upc:3.04,mom:0.0318},
+    "Sep-26":{usos:19837,base:176328,pen:0.0370,cli:6519,upc:3.04,mom:0.0890}
   }},
   "COPEC":{color:"#185FA5",data:{
     "Nov-25":{usos:17446,base:132118,pen:0.0819,cli:10818,upc:1.61,mom:null},
@@ -281,25 +278,28 @@ const EST_DATA={
     "May-26":{usos:12379,base:42119,pen:0.2939,cli:12379,upc:1.0,mom:0.1140},
     "Jun-26":{usos:10967,base:43303,pen:0.2533,cli:10967,upc:1.0,mom:-0.1141},
     "Jul-26":{usos:13721,base:46423,pen:0.2872,cli:13331,upc:1.03,mom:0.2511},
-    "Ago-26":{usos:14492,base:47547,pen:0.2988,cli:14205,upc:1.02,mom:0.0562}
+    "Ago-26":{usos:14492,base:47547,pen:0.2988,cli:14205,upc:1.02,mom:0.0562},
+    "Sep-26":{usos:13791,base:49974,pen:0.2737,cli:13676,upc:1.01,mom:-0.0484}
   }}
+};
+
+/* Partner del Mes — estructura independiente, fácil de extender mes a mes.
+   Para agregar un nuevo mes:
+   PARTNER_MES["Oct-26"]={partner:"Nombre Partner",producto:"Descripción corta del beneficio",usos:0,clientes:0}; */
+const PARTNER_MES={
+  "Ago-26":{partner:"KidZania",producto:"30% de descuento en entradas de niño y adulto",usos:180,clientes:57},
+  "Sep-26":{partner:"Copec",producto:"Completo Palta Hass a $1.000",usos:2050,clientes:2034}
 };
 
 const PW_ORDER=["1a 2025","2a 2025","3a 2025","1a 2026","2a 2026","3a 2026"];
 const EST_PARTNERS=["RINCON DEL JUMBO","CABIFY","COPEC","CENCO MALLS"];
-const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25","Oct-25","Nov-25","Dic-25","Ene-26","Feb-26","Mar-26","Abr-26","May-26","Jun-26","Jul-26","Ago-26"];
+const MONTH_ORDER=["Mar-25","Abr-25","May-25","Jun-25","Jul-25","Ago-25","Sep-25","Oct-25","Nov-25","Dic-25","Ene-26","Feb-26","Mar-26","Abr-26","May-26","Jun-26","Jul-26","Ago-26","Sep-26"];
 const PW_PALETTE=["#C5ECC4","#8DD98C","#3CC13B","#27A026","#1A7A19"];
 const PARTNER_COLORS=["#3CC13B","#27A026","#1A7A19","#0F5210","#8DD98C","#C5ECC4","#6B3A2A","#0097C4","#7B3FAF","#185FA5"];
 const YEARS=["2025","2026"];
 
-/* Partner del Mes — estructura independiente, fácil de extender mes a mes.
-   Para agregar un nuevo mes:
-   PARTNER_MES["Sep-26"]={partner:"Nombre Partner",producto:"Descripción corta del beneficio",usos:0,clientes:0}; */
-const PARTNER_MES={
-  "Ago-26":{partner:"KidZania",producto:"30% dcto entradas niño y adulto",usos:180,clientes:57}
-};
-
 let selPWs=new Set(["3a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
+let selPOM=Object.keys(PARTNER_MES).sort((a,b)=>MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b)).pop()||null;
 const fmt=n=>(n===null||n===undefined||isNaN(n))?"–":Math.round(n).toLocaleString("es-CL");
 const ptotal=pw=>Object.values(PW_DATA[pw].partners).flatMap(p=>p).reduce((s,x)=>s+x.usos,0);
 const ppartner=(pw,p)=>PW_DATA[pw].partners[p]?PW_DATA[pw].partners[p].reduce((s,x)=>s+x.usos,0):0;
@@ -315,9 +315,8 @@ function buildKPIs(){
     const idx=MONTH_ORDER.indexOf(lM),prevM=MONTH_ORDER[idx-1];
     const mom=d.mom,mcls=mom==null?"neu":mom>=0?"up":"dn";
     const msign=mom==null?"–":((mom>=0?"+":"")+(mom*100).toFixed(1)+"%");
-    const pend=EST_DATA[p].data["Ago-26"]&&EST_DATA[p].data["Ago-26"].incompleto?' <span style="font-weight:400">(cierre pendiente)</span>':'';
     return`<div class="kc" style="border-left:3px solid ${EST_DATA[p].color}">
-      <div class="kl">${p} · ${lM}${pend}</div>
+      <div class="kl">${p} · ${lM}</div>
       <div class="kv">${fmt(d.usos)}</div>
       <div class="ks ${mcls}">${msign}${prevM?' vs '+prevM:''}</div>
     </div>`;
@@ -334,6 +333,29 @@ function clrPW(){selPWs.clear();bPW();rPW()}
 function selAllM(){MONTH_ORDER.forEach(m=>selMonths.add(m));bMonths();rEst()}
 function clrM(){selMonths.clear();bMonths();rEst()}
 function tog(id){document.getElementById("prods-"+id)?.classList.toggle("op");document.getElementById("chev-"+id)?.classList.toggle("op")}
+
+/* Partner del Mes: selector de mes independiente (clic por mes) */
+function bPOM(){
+  const c=document.getElementById("pom-pills");c.innerHTML="";
+  Object.keys(PARTNER_MES).sort((a,b)=>MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b)).forEach(m=>{
+    const b=document.createElement("button");
+    b.className="mpill"+(selPOM===m?" on":"");
+    b.textContent=m;
+    b.onclick=()=>{selPOM=m;bPOM();rPOM()};
+    c.appendChild(b);
+  });
+}
+function rPOM(){
+  const el=document.getElementById("partner-mes");
+  const d=selPOM?PARTNER_MES[selPOM]:null;
+  if(!d){el.innerHTML='<div class="empty">Sin información</div>';return}
+  el.innerHTML=`<div class="pmetrics pom-grid">
+    <div class="pmet pom-full"><div class="pmet-l">Partner · ${selPOM}</div><div class="pmet-v">${d.partner}</div></div>
+    <div class="pmet"><div class="pmet-l">Usos</div><div class="pmet-v" style="color:var(--g)">${fmt(d.usos)}</div></div>
+    <div class="pmet"><div class="pmet-l">Clientes</div><div class="pmet-v">${fmt(d.clientes)}</div></div>
+  </div>
+  <div class="hint-box" style="margin-top:8px"><b>${d.producto}</b></div>`;
+}
 
 function buildProdRows(items){
   const mp=Math.max(...items.map(x=>x.usos),1);
@@ -374,26 +396,9 @@ function rPW(){
   }
 }
 
-function renderPartnerMes(){
-  const months=getM();
-  const withData=months.filter(m=>PARTNER_MES[m]);
-  const rows=withData.length?withData:(months.length?[months[months.length-1]]:[]);
-  const el=document.getElementById("partner-mes");
-  if(!rows.length){el.innerHTML='<div class="pom-table"><div class="pom-row"><div class="pom-cell pom-empty">Sin meses seleccionados</div></div></div>';return}
-  el.innerHTML=`<div class="pom-table">
-    <div class="pom-row head"><div class="pom-cell">Mes</div><div class="pom-cell">Partner del Mes</div><div class="pom-cell pom-num">Usos</div><div class="pom-cell pom-num">Clientes</div></div>
-    ${rows.map(m=>{
-      const d=PARTNER_MES[m];
-      if(!d)return `<div class="pom-row"><div class="pom-cell">${m}</div><div class="pom-cell pom-empty">Sin información</div><div class="pom-cell pom-num pom-empty">–</div><div class="pom-cell pom-num pom-empty">–</div></div>`;
-      return `<div class="pom-row"><div class="pom-cell">${m}<div style="font-size:10px;font-weight:400;color:var(--mt)">${d.producto||""}</div></div><div class="pom-cell">${d.partner}</div><div class="pom-cell pom-num">${fmt(d.usos)}</div><div class="pom-cell pom-num">${fmt(d.clientes)}</div></div>`;
-    }).join("")}
-  </div>`;
-}
-
 function rEst(){
   const p=selPartner,color=EST_DATA[p].color,cfg=EST_CFG[p];
   document.getElementById("est-hint").innerHTML=cfg.hint;
-  renderPartnerMes();
   const months=getM().filter(m=>EST_DATA[p].data[m]);
   document.getElementById("est-leg").innerHTML=`<span class="leg-i"><span class="leg-sq" style="background:${color}"></span>${cfg.labelUsos}</span><span class="leg-i"><span class="leg-sq" style="background:${color};opacity:.35"></span>${cfg.labelCli}</span><span class="leg-i"><span class="leg-line" style="background:#E8580D"></span>${cfg.labelUpc}</span>`;
   const ctx=document.getElementById("est-chart").getContext("2d");if(eC)eC.destroy();
@@ -412,10 +417,10 @@ function rEst(){
     <div class="pmet"><div class="pmet-l">${cfg.labelCli}</div><div class="pmet-v">${fmt(d.cli)}</div></div>
     <div class="pmet"><div class="pmet-l">${cfg.labelUpc}</div><div class="pmet-v">${d.upc!=null?d.upc.toFixed(2):'–'}</div></div>
     <div class="pmet"><div class="pmet-l">MoM</div><div class="pmet-v" style="color:${d.mom!=null?(d.mom>=0?'#27A026':'#C0392B'):'#888'}">${d.mom!=null?((d.mom>=0?'+':'')+(d.mom*100).toFixed(1)+'%'):'–'}</div></div>
-  </div>${d.incompleto?'<div class="hint-box" style="margin-top:8px">Mes en proceso de cierre — aún sin usos/penetración cargados. Base de clientes ya disponible.</div>':''}`;
+  </div>`;
 }
 
-buildKPIs();bPW();bEstTabs();bYears();bMonths();rPW();rEst();
+buildKPIs();bPW();bEstTabs();bYears();bMonths();rPW();rEst();bPOM();rPOM();
 </script>
 </body>
 </html>
