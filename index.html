@@ -266,7 +266,8 @@ const EST_DATA={
     "May-26":{usos:56152,base:149000,pen:0.1919,cli:28586,upc:1.96,mom:-0.0039},
     "Jun-26":{usos:71760,base:160000,pen:0.2120,cli:33923,upc:2.12,mom:0.2780},
     "Jul-26":{usos:54497,base:170853,pen:0.1756,cli:30000,upc:1.82,mom:-0.2405},
-    "Ago-26":{usos:56055,base:176040,pen:0.1761,cli:31003,upc:1.81,mom:0.0286}
+    "Ago-26":{usos:56055,base:176040,pen:0.1761,cli:31003,upc:1.81,mom:0.0286},
+    "Sep-26":{usos:57288,base:176328,pen:null,cli:null,upc:null,mom:0.0220}
   }},
   "CENCO MALLS":{color:"#0097C4",data:{
     "Nov-25":{usos:4918,base:25470,pen:0.1931,cli:4918,upc:1.0,mom:null},
@@ -288,8 +289,10 @@ const EST_DATA={
    PARTNER_MES["Oct-26"]={partner:"Nombre Partner",producto:"Descripción corta del beneficio",usos:0,clientes:0}; */
 const PARTNER_MES={
   "Ago-26":{partner:"KidZania",producto:"30% de descuento en entradas de niño y adulto",usos:180,clientes:57},
-  "Sep-26":{partner:"Copec",producto:"Completo Palta Hass a $1.000",usos:2050,clientes:2034}
+  "Sep-26":{partner:"Copec",producto:"Completo Palta Hass a $1.000",usos:2050,clientes:2034},
+  "Oct-26":{partner:"Palumbo",producto:"50% de descuento en Palumbo: manicure, pedicure, pestañas y depilación",usos:113,clientes:null,nota:"Mes en curso: 113 usos a la fecha"}
 };
+const monthKey=m=>{const i=["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"].indexOf(m.slice(0,3));return(2000+parseInt(m.slice(-2)))*12+i};
 
 const PW_ORDER=["1a 2025","2a 2025","3a 2025","1a 2026","2a 2026","3a 2026"];
 const EST_PARTNERS=["RINCON DEL JUMBO","CABIFY","COPEC","CENCO MALLS"];
@@ -299,7 +302,7 @@ const PARTNER_COLORS=["#3CC13B","#27A026","#1A7A19","#0F5210","#8DD98C","#C5ECC4
 const YEARS=["2025","2026"];
 
 let selPWs=new Set(["3a 2026"]),selPartner="RINCON DEL JUMBO",selMonths=new Set(MONTH_ORDER),selYears=new Set(YEARS),pwC=null,eC=null;
-let selPOM=Object.keys(PARTNER_MES).sort((a,b)=>MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b)).pop()||null;
+let selPOM=Object.keys(PARTNER_MES).sort((a,b)=>monthKey(a)-monthKey(b)).pop()||null;
 const fmt=n=>(n===null||n===undefined||isNaN(n))?"–":Math.round(n).toLocaleString("es-CL");
 const ptotal=pw=>Object.values(PW_DATA[pw].partners).flatMap(p=>p).reduce((s,x)=>s+x.usos,0);
 const ppartner=(pw,p)=>PW_DATA[pw].partners[p]?PW_DATA[pw].partners[p].reduce((s,x)=>s+x.usos,0):0;
@@ -337,7 +340,7 @@ function tog(id){document.getElementById("prods-"+id)?.classList.toggle("op");do
 /* Partner del Mes: selector de mes independiente (clic por mes) */
 function bPOM(){
   const c=document.getElementById("pom-pills");c.innerHTML="";
-  Object.keys(PARTNER_MES).sort((a,b)=>MONTH_ORDER.indexOf(a)-MONTH_ORDER.indexOf(b)).forEach(m=>{
+  Object.keys(PARTNER_MES).sort((a,b)=>monthKey(a)-monthKey(b)).forEach(m=>{
     const b=document.createElement("button");
     b.className="mpill"+(selPOM===m?" on":"");
     b.textContent=m;
@@ -354,7 +357,7 @@ function rPOM(){
     <div class="pmet"><div class="pmet-l">Usos</div><div class="pmet-v" style="color:var(--g)">${fmt(d.usos)}</div></div>
     <div class="pmet"><div class="pmet-l">Clientes</div><div class="pmet-v">${fmt(d.clientes)}</div></div>
   </div>
-  <div class="hint-box" style="margin-top:8px"><b>${d.producto}</b></div>`;
+  <div class="hint-box" style="margin-top:8px"><b>${d.producto}</b>${d.nota?`<br>${d.nota}`:''}</div>`;
 }
 
 function buildProdRows(items){
